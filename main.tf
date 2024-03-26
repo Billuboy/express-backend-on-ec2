@@ -8,14 +8,17 @@ provider "aws" {
   }
 }
 
+# Fetching information for default VPC.
 data "aws_vpc" "default_vpc" {
   default = true
 }
 
+# Fetching AZ information for default region.
 data "aws_availability_zones" "available" {
   state = "available"
 }
 
+# Fetching subnet information for default VPC. 
 data "aws_subnets" "default_vpc_subnets" {
   filter {
     name   = "vpc-id"
@@ -26,7 +29,7 @@ data "aws_subnets" "default_vpc_subnets" {
 module "alb" {
   source = "./modules/alb"
 
-  default_vpc_id = data.aws_vpc.default_vpc.id
+  default_vpc_id         = data.aws_vpc.default_vpc.id
   default_vpc_subnet_ids = data.aws_subnets.default_vpc_subnets.ids
 
 }
@@ -34,8 +37,8 @@ module "alb" {
 module "asg" {
   source = "./modules/asg"
 
-  alb_sg_id = module.alb.alb_sg_id
-  alb_tg_arn = module.alb.alb_tg_arn
-  default_vpc_id = data.aws_vpc.default_vpc.id
-  default_region_azs =  data.aws_availability_zones.available.names
+  alb_sg_id          = module.alb.alb_sg_id
+  alb_tg_arn         = module.alb.alb_tg_arn
+  default_vpc_id     = data.aws_vpc.default_vpc.id
+  default_region_azs = data.aws_availability_zones.available.names
 }

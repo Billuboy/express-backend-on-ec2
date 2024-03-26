@@ -3,7 +3,6 @@ resource "aws_lb_target_group" "alb_target_group" {
   port                          = 80
   protocol                      = "HTTP"
   vpc_id                        = var.default_vpc_id
-  # vpc_id                        = data.aws_vpc.default_vpc.id
   load_balancing_algorithm_type = "round_robin"
   health_check {
     enabled  = true
@@ -17,10 +16,8 @@ module "load_balancer" {
   source                     = "terraform-aws-modules/alb/aws"
   name                       = "demo-alb"
   vpc_id                     = var.default_vpc_id
-  # vpc_id                     = data.aws_vpc.default_vpc.id
   enable_deletion_protection = false
   subnets                    = var.default_vpc_subnet_ids
-  # subnets                    = data.aws_subnets.default_vpc_subnets.ids
   security_group_name        = "alb-sg"
   security_group_ingress_rules = {
     all_http = {
@@ -41,6 +38,7 @@ module "load_balancer" {
     forward_to_tg = {
       port     = 80
       protocol = "HTTP"
+      # Using weighted_forward policy to forward incoming requests to the target group. 
       weighted_forward = {
         target_groups = [
           {
